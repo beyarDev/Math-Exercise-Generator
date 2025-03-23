@@ -1,5 +1,6 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
+const args = process.argv.slice(2);
 
 // Function to generate a random number within a range
 const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -25,8 +26,8 @@ const generateExercise = (operation) => {
             answer = num1 - num2;
             break;
         case 'multiply':
-            num1 = getRandomNumber(1, 10);
-            num2 = getRandomNumber(1, 10);
+            num1 = getRandomNumber(2, 12);
+            num2 = getRandomNumber(2, 12);
             question = `${num1} * ${num2} = `;
             answer = num1 * num2;
             break;
@@ -42,11 +43,11 @@ const generateExercise = (operation) => {
 }
 
 // Function to generate a PDF with math exercises
-const generatePDF = (fileName, pages, exercisesPerPage) => {
+const generatePDF = (fileName, pages, exercisesPerPage, withAnswers) => {
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(fileName));
 
-    const operations = ['add', 'subtract', 'multiply', 'divide','multiply', 'divide'];
+    const operations = [ 'multiply',"multiply", 'divide'];
     const answers = [];
 
     for (let page = 0; page < pages; page++) {
@@ -78,7 +79,8 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
     const tableTop = 100;
 
     let currentPageAnswers = [];
-    
+    if(withAnswers){
+
     answers.forEach((answer, index) => {
         currentPageAnswers.push(answer);
         
@@ -93,6 +95,8 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
             currentPageAnswers = [];
         }
     });
+    }
+    
 
     doc.end();
 }
@@ -126,4 +130,4 @@ const renderAnswers = (doc, startX, startY, answers, itemsPerRow, itemWidth, ite
 }
 
 // Generate a PDF with 10 pages, each containing 10 exercises
-generatePDF('math_exercises.pdf', 3, 20);
+generatePDF('math_exercises-multiply.pdf', args[0] || 10, 20,false);

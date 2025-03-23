@@ -1,6 +1,6 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
-
+const args = process.argv.slice(2);
 // Function to generate a random number within a range
 const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -10,14 +10,18 @@ const generateExercise = (operation) => {
 
     switch (operation) {
         case 'add':
-            num1 = getRandomNumber(1, 100000);
-            num2 = getRandomNumber(1, 100000);
+            num1 = getRandomNumber(1, 10);
+            num2 = getRandomNumber(1, 10);
+            while(num1 + num2 > 10){
+                num1 = getRandomNumber(1, 10);
+                num2 = getRandomNumber(1, 10); 
+            }
             question = `${num1} + ${num2} = `;
             answer = num1 + num2;
             break;
         case 'subtract':
-            num1 = getRandomNumber(1, 100000);
-            num2 = getRandomNumber(1, 100000);
+            num1 = getRandomNumber(1, 10);
+            num2 = getRandomNumber(1, 10);
             if (num1 < num2) {
                 [num1, num2] = [num2, num1]; // Swap to ensure num1 >= num2
             }
@@ -25,8 +29,8 @@ const generateExercise = (operation) => {
             answer = num1 - num2;
             break;
         case 'multiply':
-            num1 = getRandomNumber(1, 10);
-            num2 = getRandomNumber(1, 10);
+            num1 = getRandomNumber(2, 12);
+            num2 = getRandomNumber(2, 12);
             question = `${num1} * ${num2} = `;
             answer = num1 * num2;
             break;
@@ -34,7 +38,7 @@ const generateExercise = (operation) => {
             num2 = getRandomNumber(1, 10);
             answer = getRandomNumber(1, 10);
             num1 = num2 * answer; // Ensure num1 is always a multiple of num2
-            question = `${num1} ÷ ${num2} = `;
+            question = `${num1} / ${num2} = `;
             break;
     }
 
@@ -42,11 +46,11 @@ const generateExercise = (operation) => {
 }
 
 // Function to generate a PDF with math exercises
-const generatePDF = (fileName, pages, exercisesPerPage) => {
+const generatePDF = (fileName, pages, exercisesPerPage, withAnswers) => {
     const doc = new PDFDocument();
     doc.pipe(fs.createWriteStream(fileName));
 
-    const operations = ['add', 'subtract', 'multiply', 'divide','multiply', 'divide'];
+    const operations = [ 'add',"add", 'subtract'];
     const answers = [];
 
     for (let page = 0; page < pages; page++) {
@@ -63,7 +67,7 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
             const operation = operations[(page * exercisesPerPage + i) % operations.length];
             const { question, answer } = generateExercise(operation);
             answers.push({ index: page * exercisesPerPage + i + 1, answer });
-            doc.fontSize(12).text(`${page * exercisesPerPage + i + 1}.  ${question}`);
+            doc.fontSize(12).text(`${question}`);
             doc.moveDown(1);
         }
         doc.fontSize(13).text(`Page ${page + 1}`, { align: 'right' });
@@ -78,7 +82,8 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
     const tableTop = 100;
 
     let currentPageAnswers = [];
-    
+    if(withAnswers){
+
     answers.forEach((answer, index) => {
         currentPageAnswers.push(answer);
         
@@ -93,6 +98,8 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
             currentPageAnswers = [];
         }
     });
+    }
+    
 
     doc.end();
 }
@@ -126,4 +133,4 @@ const renderAnswers = (doc, startX, startY, answers, itemsPerRow, itemWidth, ite
 }
 
 // Generate a PDF with 10 pages, each containing 10 exercises
-generatePDF('math_exercises.pdf', 3, 20);
+generatePDF('math_exercises-year-one.pdf', args[0] || 10, 20,false);

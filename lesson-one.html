@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prank Chain</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 50px;
+            font-size: 2.5rem;
+            color: #444;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            position: fixed;
+            z-index: 2;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+        }
+        .modal h3 {
+            margin: 0 0 15px;
+            font-size: 1.5rem;
+            color: #444;
+        }
+        .overlay {
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Click To Get Your Gift</h1>
+    <button onclick="surprise()">Click Me</button>
+
+    <script>
+        function surprise(prankCount = 1) {
+            // Create overlay
+            const overlay = document.createElement("div");
+            overlay.className = "overlay";
+
+            // Create modal
+            const modal = document.createElement("div");
+            modal.className = "modal";
+            modal.setAttribute("role", "dialog");
+            modal.setAttribute("aria-label", "Surprise Modal");
+
+            // Add heading to modal
+            const heading = document.createElement("h3");
+            heading.textContent = `Prank #${prankCount} - 🤣🤣🤣🤣🤣🤣🤣🤣🤣🤣 `;
+            if(prankCount == 4){
+            heading.textContent = "You really don't give up don't you😜"
+            }else if(prankCount == 12){
+                const img = document.createElement("img");
+                heading.textContent = "Gotcha!"
+                img.src = "./donkey.webp"
+                img.style.width = "200px"
+                modal.appendChild(img)
+            }else if(prankCount == 9){
+                
+                heading.textContent = "😜😜😜😜😜😜😜😜😜😜😜😜😜😜😜😜😜"
+            }else if(prankCount == 10){
+                heading.textContent = "Stoop it you idiot"
+            }else if (prankCount == 8){
+                const img = document.createElement("img")
+                img.src = "./dog.jpeg"
+                img.style.width = "200px"
+                modal.appendChild(img)
+                heading.textContent = "eww your gross"
+            }else if(prankCount == 11){
+                
+                heading.textContent = "I'm warning you don't try to be smart"
+            }
+            modal.appendChild(heading);
+
+            // Add close button to modal
+            const closeButton = document.createElement("button");
+            closeButton.textContent = "Close";
+            closeButton.onclick = function () {
+                document.body.removeChild(overlay);
+                document.body.removeChild(modal);
+                if(prankCount < 12){
+                surprise(prankCount + 1); // Trigger the next prank popup
+
+                }
+            };
+            modal.appendChild(closeButton);
+
+            // Append overlay and modal to the body
+            document.body.appendChild(overlay);
+            document.body.appendChild(modal);
+        }
+    </script>
+</body>
+</html>
