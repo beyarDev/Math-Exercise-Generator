@@ -14,7 +14,10 @@ const generateExercise = (operation) => {
     case "add":
       num1 = getRandomNumber(1, 100);
       num2 = getRandomNumber(1, 100);
-      bottomNumber = getRandomNumber(1, 20); // Random bottom number
+      bottomNumber = getRandomNumber(1, 200);
+      while (bottomNumber < num1 || bottomNumber < num2) {
+        bottomNumber = getRandomNumber(1, 200);
+      }
       question = `${num1} + ${num2}`;
       answer = num1 + num2;
       break;
@@ -59,10 +62,10 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
     if (page > 0) {
       doc.addPage();
     }
-    if (page === 0) {
-      doc.fontSize(15).text("Math Exercises", { align: "center" });
-      doc.moveDown(2);
-    }
+    // if (page === 0) {
+    //   doc.fontSize(15).text("Math Exercises", { align: "center" });
+    //   doc.moveDown(2);
+    // }
 
     for (let i = 0; i < exercisesPerPage; i++) {
       const operation =
@@ -71,7 +74,6 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
         generateExercise(operation);
       answers.push({ index: page * exercisesPerPage + i + 1, answer });
 
-      // Draw the fractions properly
       const startX = 100;
       const startY = doc.y;
 
@@ -87,6 +89,7 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
         num2.toString().length > bottomNumber.toString().length
           ? num2.toString().length
           : bottomNumber.toString().length;
+
       // Draw the horizontal line for the denominator
 
       const lineOneLength = (numOneTextLength / 2) * 14 || 14;
@@ -102,9 +105,24 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
         .stroke();
       doc.moveDown(0.3);
 
+      const bottomNumOneLength = (bottomNumber.toString().length / 2) * 14;
+      const bottomLineOneLength = lineOneLength - bottomNumOneLength;
+      const bottomNumOneStartPoint = bottomLineOneLength / 2;
+
+      const bottomNumTwoLength = (bottomNumber.toString().length / 2) * 14;
+      const bottomLineTwoLength = lineTwoLength - bottomNumTwoLength;
+      const bottomNumTwoStartPoint = bottomLineTwoLength / 2;
       // Draw bottomNumber under num1 and num2 (keep them aligned by using startY)
-      doc.fontSize(14).text(`${bottomNumber}`, startX, startY + 28); // Draw under num1
-      doc.fontSize(14).text(`${bottomNumber}`, startX + 60, startY + 28); // Draw under num2
+      doc
+        .fontSize(14)
+        .text(`${bottomNumber}`, startX + bottomNumOneStartPoint, startY + 28); // Draw under num1
+      doc
+        .fontSize(14)
+        .text(
+          `${bottomNumber}`,
+          startX + 60 + bottomNumTwoStartPoint,
+          startY + 28
+        ); // Draw under num2
 
       doc.moveDown(2);
     }
@@ -116,5 +134,5 @@ const generatePDF = (fileName, pages, exercisesPerPage) => {
   doc.end();
 };
 
-// Generate a PDF with 10 pages, each containing 6 exercises
-generatePDF("fractions.pdf", args[0] || 10, 6);
+// Generate a PDF with 6 pages, each containing 8 exercises
+generatePDF("fractions.pdf", args[0] || 6, 8);
